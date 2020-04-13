@@ -1,7 +1,10 @@
 package com.ITIMADIsmailia.COVID19
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ITIMADIsmailia.COVID19.data.db.unitlocalized.UnitCountriesStat
@@ -26,6 +29,17 @@ class MainActivity() : ScopedActivity(),KodeinAware{
         supportActionBar?.title = "COVID19 - Tracker"
         viewModel = ViewModelProviders.of(this,viewModelFactory)
             .get(MainViewModel::class.java)
+
+        //** Set the colors of the Pull To Refresh View
+        itemsswipetorefresh.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        itemsswipetorefresh.setColorSchemeColors(Color.WHITE)
+
+        itemsswipetorefresh.setOnRefreshListener {
+            buildUI()
+            Toast.makeText(applicationContext,"Refreshed Successfully!",Toast.LENGTH_LONG).show()
+            itemsswipetorefresh.isRefreshing = false
+        }
+
         buildUI()
     }
 
