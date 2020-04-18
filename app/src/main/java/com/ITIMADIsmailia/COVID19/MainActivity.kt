@@ -40,7 +40,10 @@ class MainActivity() : ScopedActivity(),KodeinAware{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        // jobScheduler start
         scheduler = this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+
+        // jobScheduler End
         supportActionBar?.title = "COVID19 - Tracker"
         viewModel = ViewModelProviders.of(this,viewModelFactory)
             .get(MainViewModel::class.java)
@@ -119,13 +122,14 @@ class MainActivity() : ScopedActivity(),KodeinAware{
             // .setRequiresCharging(true)
             // .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
             .setPersisted(true)
-            .setPeriodic(time * 60 * 1000.toLong())
+            .setPeriodic(time * 60 * 60 * 1000.toLong())
             .build()
 
         var scheduler =  this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler?
         val resultCode = scheduler!!.schedule(info)
         if (resultCode == JobScheduler.RESULT_SUCCESS) {
             Log.d(TAG, "Job scheduled")
+
         } else {
             Log.d(TAG, "Job scheduling failed")
         }
@@ -138,10 +142,10 @@ class MainActivity() : ScopedActivity(),KodeinAware{
     }
 
     companion object {
-        private const val everyHour : Int = 15
-        private const val everyTwoHour :Int = 16
-        private const val everyFiveHour : Int = 17
-        private const val daily : Int = 18
+        private const val everyHour : Int = 1
+        private const val everyTwoHour :Int = 2
+        private const val everyFiveHour : Int = 5
+        private const val daily : Int = 24
     }
     //Wagdy end
 }

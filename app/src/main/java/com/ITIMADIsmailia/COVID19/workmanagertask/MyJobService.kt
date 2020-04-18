@@ -16,27 +16,6 @@ class MyJobService : JobService() {
         return true
     }
 
-   /* private fun doBackgroundWork(params: JobParameters?) {
-        Thread(Runnable {
-            run {
-                for (i in 0..10) {
-                    Log.d(Tag, "run$i")
-                    bulidNotification()
-                    if (jobCancelled) {
-                        return@Runnable
-                    }
-                    try {
-                        Thread.sleep(1000)
-                    }catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-
-                }
-            }
-            Log.d(Tag, "Job finished")
-            jobFinished(params, false)
-        }).start()
-    }*/
 
     override fun onStopJob(params: JobParameters?): Boolean {
         Log.d(Tag, "job cancelled before completion")
