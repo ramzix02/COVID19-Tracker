@@ -26,6 +26,7 @@ class CountryStateRepositoryImpl(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getCountryStatList(hoursToFetch: Long): LiveData<out List<UnitCountriesStat>> {
         initCountryStatData(hoursToFetch)
         return withContext(Dispatchers.IO) {

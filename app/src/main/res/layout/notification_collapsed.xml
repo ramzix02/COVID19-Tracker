@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:id="@+id/notification_collapsed">
+    <ImageView
+        android:id="@+id/corona_img"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/coronavirus"/>
+<LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_weight="1"
+    android:weightSum="2">
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textColor="#4CAF50"
+        android:text="COVID-19"
+        style="@style/TextAppearance.Compat.Notification.Title"/>
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:gravity="center"
+    android:textColor="#009688"
+    android:text="There is new data update in your country"
+    style="@style/TextAppearance.Compat.Notification.Info"/>
+</LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+    <item
+        android:id="@+id/subscribe_item"
+        android:title="subscribe"/>
+
+    <item
+        android:id="@+id/update_item"
+        android:title="update data">
+
+        <menu>
+            <item
+                android:id="@+id/every_hour_item"
+                android:title="every hour"/>
+
+            <item
+            android:id="@+id/every_2_hour_item"
+            android:title="every 2 hours"/>
+
+            <item
+            android:id="@+id/every_5_hour_item"
+            android:title="every 5 hours"/>
+
+            <item
+            android:id="@+id/daily_item"
+            android:title="daily"/>
+
+            <item
+                android:id="@+id/cancel_update"
+                android:title="Cancel Update"/>
+
+        </menu>
+
+    </item>
+</menu>
