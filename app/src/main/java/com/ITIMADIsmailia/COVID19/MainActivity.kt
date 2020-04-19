@@ -4,6 +4,8 @@ import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Context
 import android.app.AlertDialog
+import android.app.job.JobParameters
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -19,6 +21,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ITIMADIsmailia.COVID19.data.db.unitlocalized.UnitCountriesStat
 import com.ITIMADIsmailia.COVID19.workmanagertask.MyJobService
+import com.ITIMADIsmailia.COVID19.workmanagertask.NotificationHelper
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -62,8 +65,8 @@ class MainActivity() : ScopedActivity(),KodeinAware{
         buildUI()
     }
 
-    fun makeViewModel() : MainViewModel{
-        return ViewModelProviders.of(this,viewModelFactory).get(MainViewModel::class.java)
+    fun makeViewModel() : MainViewModel {
+        return ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
     }
 
     private fun buildUI() = launch(Dispatchers.Main) {
@@ -106,9 +109,12 @@ class MainActivity() : ScopedActivity(),KodeinAware{
                         editor.putString("deaths",item.countryStat.totalDeath)
                         editor.commit()
 
-                        /*
-                        Show Notification Here ya Wagdy
-                         */
+                        //show notification when data updated
+                        val notificationHelper = NotificationHelper(applicationContext,"${getCountryPrefs().countryName}")
+                        val nb = notificationHelper.channelNotification
+                        notificationHelper.manager!!.notify(1, nb.build())
+                        //end notification
+
                         Toast.makeText( this@MainActivity, "Notification", Toast.LENGTH_SHORT ).show()
                     }
                 }
@@ -150,7 +156,9 @@ class MainActivity() : ScopedActivity(),KodeinAware{
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // var bool : Boolean = false
         when(item.itemId){
-            R.id.subscribe_item -> {Toast.makeText(this, "subscribe_item",Toast.LENGTH_SHORT).show()}
+            R.id.subscribe_item -> {
+                val intent = Intent(this, SettingActivity::class.java)
+            startActivity(intent)}
             R.id.every_hour_item -> scheduleJob(everyHour)
             R.id.every_2_hour_item -> scheduleJob(everyTwoHour)
             R.id.every_5_hour_item -> scheduleJob(everyFiveHour)
@@ -233,6 +241,11 @@ class MainActivity() : ScopedActivity(),KodeinAware{
         obj.recovered = sharedPreference.getString("recovered","0").toString()
         obj.deaths = sharedPreference.getString("deaths","0").toString()
         return  obj
+    }
+
+    fun bulidNotification() {
+
+
     }
 
 }

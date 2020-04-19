@@ -10,6 +10,8 @@ import com.ITIMADIsmailia.COVID19.MainActivity
 import com.ITIMADIsmailia.COVID19.MainViewModel
 import com.ITIMADIsmailia.COVID19.MainViewModelFactory
 import com.ITIMADIsmailia.COVID19.ScopedActivity
+import com.ITIMADIsmailia.COVID19.data.repositry.CountryStateRepository
+import com.ITIMADIsmailia.COVID19.data.repositry.CountryStateRepositoryImpl
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
@@ -24,12 +26,11 @@ class MyJobService() : JobService() {
 
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(Tag, "job started")
-        //doBackgroundWork(params)
-        var obj= MainActivity()
 
+/* var obj= MainActivity()
+        //var countryStateRepository: CountryStateRepositoryImpl = CountryStateRepositoryImpl()
         obj.makeViewModel().hoursCount = 2
-        obj.makeViewModel().countryStat.toString()
-
+        obj.makeViewModel().countryStat*/
 
         bulidNotification(params)
         return true
@@ -44,8 +45,8 @@ class MyJobService() : JobService() {
 
     fun bulidNotification(params: JobParameters?) {
         NotificationHelper.counter += 1
-        NotificationHelper.title = "${NotificationHelper.counter}"
-        val notificationHelper = NotificationHelper(applicationContext)
+       // NotificationHelper.title = "${NotificationHelper.counter}"
+        val notificationHelper = NotificationHelper(applicationContext,"")
         val nb = notificationHelper.channelNotification
         notificationHelper.manager!!.notify(NotificationHelper.counter, nb.build())
         jobFinished(params, false)

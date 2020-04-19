@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/subscribe_item"
-        android:title="subscribe"/>
+        android:title="subscribed"/>
 
     <item
         android:id="@+id/update_item"
