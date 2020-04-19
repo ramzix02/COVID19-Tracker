@@ -37,6 +37,7 @@ class MainActivity() : ScopedActivity(),KodeinAware{
     private var times: Int  = 1
     private lateinit var scheduler: JobScheduler
     var TAG = "MainActivity"
+
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,8 +47,7 @@ class MainActivity() : ScopedActivity(),KodeinAware{
 
         // jobScheduler End
         supportActionBar?.title = "COVID19 - Tracker"
-        viewModel = ViewModelProviders.of(this,viewModelFactory)
-            .get(MainViewModel::class.java)
+        makeViewModel()
 
         //** Set the colors of the Pull To Refresh View
         itemsswipetorefresh.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(this, R.color.colorPrimary))
@@ -62,10 +62,14 @@ class MainActivity() : ScopedActivity(),KodeinAware{
         buildUI()
     }
 
+    fun makeViewModel() : MainViewModel{
+        return ViewModelProviders.of(this,viewModelFactory).get(MainViewModel::class.java)
+    }
+
     private fun buildUI() = launch(Dispatchers.Main) {
         //passing hours to fetch data after
-        viewModel.hoursCount = 2
-        val countryState = viewModel.countryStat.await()
+        makeViewModel().hoursCount = 2
+        val countryState = makeViewModel().countryStat.await()
 
         countryState.observe(this@MainActivity, androidx.lifecycle.Observer {
             if (it == null) return@Observer

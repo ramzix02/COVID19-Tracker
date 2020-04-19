@@ -5,16 +5,32 @@ import android.app.job.JobService
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.ViewModelProviders
+import com.ITIMADIsmailia.COVID19.MainActivity
+import com.ITIMADIsmailia.COVID19.MainViewModel
+import com.ITIMADIsmailia.COVID19.MainViewModelFactory
+import com.ITIMADIsmailia.COVID19.ScopedActivity
+import org.kodein.di.Kodein
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.closestKodein
+import org.kodein.di.generic.instance
 import java.lang.Exception
 import kotlin.concurrent.thread
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-class MyJobService : JobService() {
+class MyJobService() : JobService() {
     val Tag = "MyJobService"
     var jobCancelled = false
+
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(Tag, "job started")
         //doBackgroundWork(params)
+        var obj= MainActivity()
+
+        obj.makeViewModel().hoursCount = 2
+        obj.makeViewModel().countryStat.toString()
+
+
         bulidNotification(params)
         return true
     }
