@@ -49,6 +49,7 @@ class MainActivity() : ScopedActivity(),KodeinAware{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         // jobScheduler start
         scheduler = this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
 
@@ -280,7 +281,24 @@ class MainActivity() : ScopedActivity(),KodeinAware{
             .getWorkInfosForUniqueWorkLiveData("update")
             .observe(this, Observer {
                 if (it[0].state == WorkInfo.State.SUCCEEDED) {
-                    viewModel.countryStat
+                    makeViewModel().countryStat
+                    buildUI()
+
+                    /*
+                    * wagdiiiiiiiii
+                    *
+                    *
+                    *
+                    *
+                    *
+                    *
+                    *
+                    *
+                    *
+                    * wagdiiiiiiii
+                    *
+                    *
+                    * */
                 }
             })
     }

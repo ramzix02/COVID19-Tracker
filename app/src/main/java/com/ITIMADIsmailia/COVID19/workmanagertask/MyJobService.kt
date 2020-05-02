@@ -26,11 +26,12 @@ class MyJobService() : JobService() {
 
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(Tag, "job started")
+        //doBackgroundWork(params)
+        var obj= MainActivity()
 
-/* var obj= MainActivity()
-        //var countryStateRepository: CountryStateRepositoryImpl = CountryStateRepositoryImpl()
         obj.makeViewModel().hoursCount = 2
-        obj.makeViewModel().countryStat*/
+        obj.makeViewModel().countryStat.toString()
+
 
         bulidNotification(params)
         return true
@@ -44,12 +45,12 @@ class MyJobService() : JobService() {
     }
 
     fun bulidNotification(params: JobParameters?) {
-        NotificationHelper.counter += 1
-       // NotificationHelper.title = "${NotificationHelper.counter}"
-        val notificationHelper = NotificationHelper(applicationContext,"")
-        val nb = notificationHelper.channelNotification
-        notificationHelper.manager!!.notify(NotificationHelper.counter, nb.build())
-        jobFinished(params, false)
+//        NotificationHelper.counter += 1
+//        NotificationHelper.title = "${NotificationHelper.counter}"
+//        val notificationHelper = NotificationHelper(applicationContext)
+//        val nb = notificationHelper.channelNotification
+//        notificationHelper.manager!!.notify(NotificationHelper.counter, nb.build())
+//        jobFinished(params, false)
     }
 
 }
