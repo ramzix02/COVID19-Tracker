@@ -93,6 +93,10 @@ dependencies {
     // New Material Design
     implementation "com.google.android.material:material:1.0.0"
 
+    //work manager
+    def work_version = "2.3.4"
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

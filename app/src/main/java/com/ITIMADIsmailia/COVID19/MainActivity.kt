@@ -17,10 +17,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.*
 import com.ITIMADIsmailia.COVID19.data.db.unitlocalized.UnitCountriesStat
 import com.ITIMADIsmailia.COVID19.workmanagertask.MyJobService
+import com.ITIMADIsmailia.COVID19.workmanagertask.MyWorker
 import com.ITIMADIsmailia.COVID19.workmanagertask.NotificationHelper
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -31,6 +34,7 @@ import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 import org.kodein.di.generic.instance
+import java.util.concurrent.TimeUnit
 
 class MainActivity() : ScopedActivity(),KodeinAware{
 
@@ -246,6 +250,39 @@ class MainActivity() : ScopedActivity(),KodeinAware{
     fun bulidNotification() {
 
 
+    }
+
+    fun buildWorkManager() {
+        //create constraints to attach it to the request
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        //create the request
+        val myRequest = PeriodicWorkRequestBuilder<MyWorker>(
+            repeatInterval = 1,
+            repeatIntervalTimeUnit = TimeUnit.HOURS
+        )
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniquePeriodicWork(
+                "update",
+                ExistingPeriodicWorkPolicy.REPLACE, myRequest
+            )
+        Toast.makeText(
+            applicationContext,
+            "you will be notified every $1 hour(s)",
+            Toast.LENGTH_SHORT
+        ).show()
+        WorkManager.getInstance(applicationContext)
+            .getWorkInfosForUniqueWorkLiveData("update")
+            .observe(this, Observer {
+                if (it[0].state == WorkInfo.State.SUCCEEDED) {
+                    viewModel.countryStat
+                }
+            })
     }
 
 }
