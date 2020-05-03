@@ -27,9 +27,6 @@
         </activity>
         <activity android:name=".MainActivity"></activity>
 
-        <service
-            android:name=".workmanagertask.MyJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

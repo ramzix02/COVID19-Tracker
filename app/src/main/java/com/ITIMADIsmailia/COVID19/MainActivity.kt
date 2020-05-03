@@ -1,28 +1,20 @@
 package com.ITIMADIsmailia.COVID19
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
-import android.content.ComponentName
 import android.content.Context
 import android.app.AlertDialog
-import android.app.job.JobParameters
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.*
 import com.ITIMADIsmailia.COVID19.data.db.unitlocalized.UnitCountriesStat
-import com.ITIMADIsmailia.COVID19.workmanagertask.MyJobService
 import com.ITIMADIsmailia.COVID19.workmanagertask.MyWorker
 import com.ITIMADIsmailia.COVID19.workmanagertask.NotificationHelper
 import com.xwray.groupie.GroupAdapter
@@ -40,20 +32,13 @@ class MainActivity() : ScopedActivity(),KodeinAware{
 
     override val kodein by closestKodein()
     private val viewModelFactory: MainViewModelFactory by instance()
-    private lateinit var viewModel: MainViewModel
     private var times: Int  = 1
-    private lateinit var scheduler: JobScheduler
+    private var intervalPeriod: Long  = 1
     var TAG = "MainActivity"
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // jobScheduler start
-        scheduler = this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-
-        // jobScheduler End
         supportActionBar?.title = "COVID19 - Tracker"
         makeViewModel()
 
@@ -76,7 +61,7 @@ class MainActivity() : ScopedActivity(),KodeinAware{
 
     private fun buildUI() = launch(Dispatchers.Main) {
         //passing hours to fetch data after
-        makeViewModel().hoursCount = 2
+        makeViewModel().hoursCount = intervalPeriod
         val countryState = makeViewModel().countryStat.await()
 
         countryState.observe(this@MainActivity, androidx.lifecycle.Observer {
@@ -156,58 +141,38 @@ class MainActivity() : ScopedActivity(),KodeinAware{
         return true
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // var bool : Boolean = false
+
         when(item.itemId){
             R.id.subscribe_item -> {
                 val intent = Intent(this, SettingActivity::class.java)
             startActivity(intent)}
-            R.id.every_hour_item -> scheduleJob(everyHour)
-            R.id.every_2_hour_item -> scheduleJob(everyTwoHour)
-            R.id.every_5_hour_item -> scheduleJob(everyFiveHour)
-            R.id.daily_item -> scheduleJob(daily)
-            R.id.cancel_update -> cancelJob()
-//            else -> super.onOptionsItemSelected(item)
+            R.id.every_hour_item -> {
+                buildWorkManager(1)
+                Toast.makeText(applicationContext,"Your data will be updated every 1 hour",Toast.LENGTH_SHORT).show()
+            }
+            R.id.every_2_hour_item ->{
+                buildWorkManager(2)
+                Toast.makeText(applicationContext,"Your data will be updated every 2 hours",Toast.LENGTH_SHORT).show()
+            }
+            R.id.every_5_hour_item -> {
+                buildWorkManager(5)
+                Toast.makeText(applicationContext,"Your data will be updated every 5 hours",Toast.LENGTH_SHORT).show()
+            }
+            R.id.daily_item ->{
+                buildWorkManager(24)
+                Toast.makeText(applicationContext,"Your data will be updated every 24 hours",Toast.LENGTH_SHORT).show()
+            }
+            R.id.cancel_update -> {
+                WorkManager.getInstance(applicationContext)
+                    .cancelAllWork()
+                Toast.makeText(applicationContext,"Your update be cancelled",Toast.LENGTH_SHORT).show()
+            }
+
         }
         return super.onOptionsItemSelected(item)
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    fun scheduleJob(time:Int) {
-        val componentName = ComponentName(this, MyJobService::class.java)
-        val info = JobInfo.Builder(123, componentName)
-            // .setRequiresCharging(true)
-            // .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
-            .setPersisted(true)
-            .setPeriodic(time * 60 * 60 * 1000.toLong())
-            .build()
-
-        var scheduler =  this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler?
-        val resultCode = scheduler!!.schedule(info)
-        if (resultCode == JobScheduler.RESULT_SUCCESS) {
-            Log.d(TAG, "Job scheduled")
-
-        } else {
-            Log.d(TAG, "Job scheduling failed")
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    fun cancelJob() {
-        var scheduler =  this.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler?
-        scheduler!!.cancel(123)
-        Log.d(TAG, "Job cancelled")
-    }
-
-    companion object {
-        private const val everyHour : Int = 1
-        private const val everyTwoHour :Int = 2
-        private const val everyFiveHour : Int = 5
-        private const val daily : Int = 24
-    }
     //Wagdy end
     fun alertDialogShow(country: SharedPrefsModel){
         val mAlertDialog = AlertDialog.Builder(this@MainActivity)
@@ -248,12 +213,8 @@ class MainActivity() : ScopedActivity(),KodeinAware{
         return  obj
     }
 
-    fun bulidNotification() {
 
-
-    }
-
-    fun buildWorkManager() {
+    fun buildWorkManager(intervalPeriod: Long) {
         //create constraints to attach it to the request
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -261,7 +222,7 @@ class MainActivity() : ScopedActivity(),KodeinAware{
 
         //create the request
         val myRequest = PeriodicWorkRequestBuilder<MyWorker>(
-            repeatInterval = 1,
+            repeatInterval = intervalPeriod,
             repeatIntervalTimeUnit = TimeUnit.HOURS
         )
             .setConstraints(constraints)
@@ -272,33 +233,18 @@ class MainActivity() : ScopedActivity(),KodeinAware{
                 "update",
                 ExistingPeriodicWorkPolicy.REPLACE, myRequest
             )
-        Toast.makeText(
-            applicationContext,
-            "you will be notified every $1 hour(s)",
-            Toast.LENGTH_SHORT
-        ).show()
+
         WorkManager.getInstance(applicationContext)
             .getWorkInfosForUniqueWorkLiveData("update")
             .observe(this, Observer {
                 if (it[0].state == WorkInfo.State.SUCCEEDED) {
                     makeViewModel().countryStat
                     buildUI()
-
-                    /*
-                    * wagdiiiiiiiii
-                    *
-                    *
-                    *
-                    *
-                    *
-                    *
-                    *
-                    *
-                    *
-                    * wagdiiiiiiii
-                    *
-                    *
-                    * */
+                    val sharedPreference =  getSharedPreferences("PREFERENCE_NAME", Context.MODE_PRIVATE)
+                    var countryName = sharedPreference.getString("countryName","Unknown").toString()
+                    val notificationHelper = NotificationHelper(applicationContext,countryName)
+                    val nb = notificationHelper.channelNotification
+                    notificationHelper.manager!!.notify(1, nb.build())
                 }
             })
     }

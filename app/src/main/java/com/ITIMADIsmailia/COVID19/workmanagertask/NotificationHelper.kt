@@ -67,7 +67,7 @@ class NotificationHelper(base: Context?, countryName: String) : ContextWrapper(b
         collapsedView = RemoteViews(packageName,R.layout.notification_collapsed)
         expandedView = RemoteViews(packageName,R.layout.notification_expanded)
         collapsedView.setTextViewText(R.id.notification_title, title);
-        val clickedIntent = Intent(this, SettingActivity::class.java)
+        val clickedIntent = Intent(this, MainActivity::class.java)
         clickPendingIntent = PendingIntent.getActivity(applicationContext,0,
             clickedIntent,0)
         collapsedView.setOnClickPendingIntent(R.layout.notification_collapsed,clickPendingIntent)
